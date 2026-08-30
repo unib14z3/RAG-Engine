@@ -5,8 +5,8 @@ from .retrieve import create_retriever
 
 class RAGPipeline:
 
-    def __init__(self):
-        self.index = build_index()
+    def __init__(self, index=None):
+        self.index = index if index is not None else build_index()
         self.retriever = create_retriever(
             self.index,
             TOP_K,

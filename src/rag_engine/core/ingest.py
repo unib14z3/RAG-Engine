@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import chromadb
-import fitz
+import pymupdf
 from llama_index.core import (
     Document,
     Settings,
@@ -62,7 +62,7 @@ def load_pdfs():
     for pdf_path in pdf_files:
         print(f"Reading: {pdf_path.name}")
 
-        pdf = fitz.open(pdf_path)
+        pdf = pymupdf.open(pdf_path)
 
         for page_number, page in enumerate(pdf.pages(), start=1):
 

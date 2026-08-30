@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-engine"
+version = "0.1.0"
+description = "Simple lightweight Retrieval-augmented generation engine."
+requires-python = ">=3.10"
+dependencies = [
+    "chromadb",
+    "llama-index",
+    "llama-index-embeddings-huggingface",
+    "llama-index-vector-stores-chroma",
+    "pymupdf",
+    "sentence-transformers",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

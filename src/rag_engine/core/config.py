@@ -2,19 +2,18 @@ from pathlib import Path
 
 # H-Dex/
 # ├── data/
-# ├── RAG_Engine/
-# │   └── src/
-# │       └── core/
+# ├── RAG-Engine/
+# │   └── src/rag_engine/core/
 # └── main.py
 
 # Project root: H-Dex/
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 # Source documents
 DATA_DIR = PROJECT_ROOT / "data"
 
 # Persistent ChromaDB storage
-CHROMA_DIR = PROJECT_ROOT / "RAG_Engine" / "chroma_db"
+CHROMA_DIR = PROJECT_ROOT / "RAG-Engine" / "chroma_db"
 
 # Chroma collection
 COLLECTION_NAME = "sih_documents"
@@ -28,4 +27,3 @@ CHUNK_OVERLAP = 50
 
 # Retrieval
 TOP_K = 5
-
