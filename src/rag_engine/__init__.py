@@ -1,4 +1,4 @@
-"""Public API for the H-Dex retrieval-augmented generation engine."""
+"""Public API for the retrieval-augmented generation engine."""
 
 from .core.ingest import build_index
 from .core.pipeline import RAGPipeline

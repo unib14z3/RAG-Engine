@@ -35,10 +35,9 @@ therefore cannot be used as a Python import name.
 ## Usage
 
 ```python
-from rag_engine import RAGPipeline, build_index
+from rag_engine import RAGPipeline
 
-index = build_index()
-pipeline = RAGPipeline(index=index)
+pipeline = RAGPipeline("/path/to/document.pdf")
 
 results = pipeline.retrieve("What does the document say about time travel?")
 for result in results:
@@ -48,6 +47,19 @@ for result in results:
 `build_index()` extracts text from all PDFs in the configured data directory,
 chunks the text, creates embeddings, and saves them to ChromaDB. If the Chroma
 collection already contains data, it is reused.
+
+The constructor accepts a PDF file or a directory of PDFs. To add another PDF
+or directory after the pipeline has been created, use:
+
+```python
+pipeline.ingest_path("/path/to/document.pdf")
+# or: pipeline.ingest_path("/path/to/pdf-directory")
+```
+
+The provided content is added to the existing collection and the pipeline is
+refreshed automatically. Do not ingest the same file repeatedly unless you
+intend to store duplicate chunks. `ingestion_path()` and `ingestionpath()` are
+also supported aliases.
 
 ## Configuration
 
@@ -59,6 +71,19 @@ Edit `src/rag_engine/core/config.py` to configure:
 - `EMBEDDING_MODEL` — Hugging Face model ID or local model directory
 - `CHUNK_SIZE` and `CHUNK_OVERLAP` — chunking settings
 - `TOP_K` — number of passages returned per query
+
+The data and database locations can also be configured without editing source
+code:
+
+```bash
+RAG_ENGINE_DATA_DIR=/path/to/pdfs \
+RAG_ENGINE_CHROMA_DIR=/path/to/chroma_db \
+python your_script.py
+```
+
+If `RAG_ENGINE_DATA_DIR` is not set, the engine uses `data/` beneath the
+directory where the application is run. `RAG_ENGINE_CHROMA_DIR` similarly
+defaults to `chroma_db/` there.
 
 ## Local and offline embeddings
 

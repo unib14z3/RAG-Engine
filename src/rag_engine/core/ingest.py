@@ -22,9 +22,9 @@ from .config import (
 )
 
 
-def build_index():
+def build_index(source_path: str | Path | None = None):
     Settings.embed_model = get_embedding_model()
-    return ingest_documents()
+    return ingest_documents(source_path)
 
 
 def get_embedding_model():
@@ -43,18 +43,29 @@ def get_chroma_collection():
     )
 
 
-def load_pdfs():
+def load_pdfs(source_path: str | Path | None = None):
     """
-    Extract real text from PDF pages using PyMuPDF.
+    Extract text from a PDF file or every PDF below a directory.
+
+    When no path is supplied, the configured ``DATA_DIR`` is used.
     """
 
     documents = []
+    source = Path(source_path).expanduser().resolve() if source_path else DATA_DIR
 
-    pdf_files = list(DATA_DIR.rglob("*.pdf"))
+    if source.is_file():
+        pdf_files = [source] if source.suffix.lower() == ".pdf" else []
+    elif source.is_dir():
+        pdf_files = [
+            path for path in source.rglob("*")
+            if path.is_file() and path.suffix.lower() == ".pdf"
+        ]
+    else:
+        raise FileNotFoundError(f"PDF source path does not exist: {source}")
 
     if not pdf_files:
         raise FileNotFoundError(
-            f"No PDF files found in: {DATA_DIR}"
+            f"No PDF files found in: {source}"
         )
 
     print(f"Found {len(pdf_files)} PDF file(s).")
@@ -87,14 +98,16 @@ def load_pdfs():
     return documents
 
 
-def ingest_documents():
+def ingest_documents(source_path: str | Path | None = None):
+    """Index configured PDFs or append PDFs from an explicit path."""
 
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    if source_path is None:
+        DATA_DIR.mkdir(parents=True, exist_ok=True)
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
 
     Settings.embed_model = get_embedding_model()
 
-    documents = load_pdfs()
+    documents = load_pdfs(source_path)
 
     if not documents:
         raise ValueError(
@@ -111,8 +124,9 @@ def ingest_documents():
 
     collection = get_chroma_collection()
 
-    # Use existing database if already populated.
-    if collection.count() > 0:
+    # Default startup uses the existing database. An explicit source path is
+    # intentionally appended to the collection.
+    if collection.count() > 0 and source_path is None:
 
         print(
             f"ChromaDB already contains "

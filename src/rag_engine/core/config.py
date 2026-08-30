@@ -1,19 +1,22 @@
+import os
 from pathlib import Path
 
-# H-Dex/
-# ├── data/
-# ├── RAG-Engine/
-# │   └── src/rag_engine/core/
-# └── main.py
-
-# Project root: H-Dex/
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
+# Installed packages live in site-packages, so do not derive project paths
+# from this module's location. By default, use the directory the application
+# is run from; deployments can override each path independently.
+PROJECT_ROOT = Path(
+    os.environ.get("RAG_ENGINE_PROJECT_ROOT", Path.cwd())
+).resolve()
 
 # Source documents
-DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR = Path(
+    os.environ.get("RAG_ENGINE_DATA_DIR", PROJECT_ROOT / "data")
+).resolve()
 
 # Persistent ChromaDB storage
-CHROMA_DIR = PROJECT_ROOT / "RAG-Engine" / "chroma_db"
+CHROMA_DIR = Path(
+    os.environ.get("RAG_ENGINE_CHROMA_DIR", PROJECT_ROOT / "chroma_db")
+).resolve()
 
 # Chroma collection
 COLLECTION_NAME = "sih_documents"
